@@ -90,55 +90,85 @@ public class JokenpoService implements IJokenpoService{
 		
 		int contador = 0;
 		for(JogadorModel jogador : jogadores) {
-			if(jogador1.getJogada() == null || jogador1.getNome() == null) {
-				jogador1= jogador;
-				if(contador == 0) continue;
-			}
-			if(jogador2.getJogada() == null || jogador2.getNome() == null) {
-				jogador2 = jogador;
-			}
+			System.out.println("contador: " + (contador + 1));
 			
-			System.out.println("p1 " + jogador1);
-			System.out.println("p2 " + jogador2);
-			regra(jogador1,jogador2);
-			if(jogador1.getStatus() == "empate" && jogador2.getStatus() == "empate") {
-				JogadorModel jogadorEmapate1 = new JogadorModel();
-				JogadorModel jogadorEmapate2 = new JogadorModel();
-				jogadorEmapate1.setNome(jogador1.getNome());
-				jogadorEmapate1.setJogada(jogador1.getJogada());
-				jogadorEmapate1.setStatus(jogador1.getStatus());
-				jogadorEmapate2.setNome(jogador2.getNome());
-				jogadorEmapate2.setJogada(jogador2.getJogada());
-				jogadorEmapate2.setStatus(jogador2.getStatus());
-				empate.add(jogadorEmapate1);
-				empate.add(jogadorEmapate2);
-				jogador1.setNome(null);
-				jogador1.setJogada(null);
-				jogador1.setStatus(null);
-				jogador2.setNome(null);
-				jogador2.setJogada(null);
-				jogador2.setStatus(null);
-			}else if(jogador1.getStatus() == "venceu") {
-				jogador2.setNome(null);
-				jogador2.setJogada(null);
-				jogador2.setStatus(null);
+			if(empate.isEmpty()) {
+				if(jogador1.getJogada() == null || jogador1.getNome() == null) {
+					jogador1= jogador;
+					if(contador == 0) {
+						contador ++ ;
+						continue;
+					}
+				}
+				if(jogador2.getJogada() == null || jogador2.getNome() == null) {
+					jogador2 = jogador;
+				}
+				
+				System.out.println("p1 " + jogador1);
+				System.out.println("p2 " + jogador2);
+				regra(jogador1,jogador2);
+				if(jogador1.getStatus() == "empate" && jogador2.getStatus() == "empate") {
+					JogadorModel jogadorEmpate1 = new JogadorModel();
+					JogadorModel jogadorEmpate2 = new JogadorModel();
+					jogadorEmpate1.setNome(jogador1.getNome());
+					jogadorEmpate1.setJogada(jogador1.getJogada());
+					jogadorEmpate1.setStatus(jogador1.getStatus());
+					jogadorEmpate2.setNome(jogador2.getNome());
+					jogadorEmpate2.setJogada(jogador2.getJogada());
+					jogadorEmpate2.setStatus(jogador2.getStatus());
+					empate.add(jogadorEmpate1);
+					empate.add(jogadorEmpate2);
+					jogador1 = new JogadorModel();
+					jogador2 = new JogadorModel();
+					vencedores.clear();
+				}else if(jogador1.getStatus() == "venceu") {
+					vencedores.clear();
+					empate.clear();
+					jogador2 = new JogadorModel();
+					vencedores.add(jogador1);
+				}else if(jogador2.getStatus() == "venceu"){
+					vencedores.clear();
+					empate.clear();
+					vencedores.add(jogador2);
+					jogador1 = new JogadorModel();
+				}
+				contador ++;
 			}else {
-				jogador1.setNome(null);
-				jogador1.setJogada(null);
-				jogador1.setStatus(null);
+					jogador1 = empate.get(0);
+					jogador2 = jogador;
+					System.out.println("p1 " + jogador1);
+					System.out.println("p2 " + jogador2);
+					regra(jogador1,jogador2);
+					if(jogador1.getStatus() == "empate" && jogador2.getStatus() == "empate") {
+						JogadorModel jogadorEmpate1 = new JogadorModel();
+						JogadorModel jogadorEmpate2 = new JogadorModel();
+						jogadorEmpate1.setNome(jogador1.getNome());
+						jogadorEmpate1.setJogada(jogador1.getJogada());
+						jogadorEmpate1.setStatus(jogador1.getStatus());
+						jogadorEmpate2.setNome(jogador2.getNome());
+						jogadorEmpate2.setJogada(jogador2.getJogada());
+						jogadorEmpate2.setStatus(jogador2.getStatus());
+						empate.add(jogadorEmpate1);
+						empate.add(jogadorEmpate2);
+						jogador1 = new JogadorModel();
+						jogador2 = new JogadorModel();
+						vencedores.clear();
+					}else if(jogador1.getStatus() == "venceu") {
+						vencedores.clear();
+						empate.clear();
+						jogador2 = new JogadorModel();
+						vencedores.add(jogador1);
+					}else if(jogador2.getStatus() == "venceu"){
+						vencedores.clear();
+						empate.clear();
+						jogador1 = new JogadorModel();
+						vencedores.add(jogador2);
+					}
+				contador ++;
 			}
-			contador ++;
 		}
 		
-		if(jogador1.getStatus() == "venceu") {
-			vencedores.add(jogador1);
-		}else if(jogador2.getStatus() == "venceu"){
-			vencedores.add(jogador2);
-		}else {
-			vencedores.addAll(empate);
-		}
-	
-		return vencedores;
+		return vencedores.isEmpty()? empate: vencedores;
 	}
 	
 	private void regra(JogadorModel p1, JogadorModel p2) {
